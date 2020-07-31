@@ -1,23 +1,35 @@
 #include "mbed.h"
 
-
 // Blinking rate in milliseconds
 #define BLINKING_RATE 500ms
+bool buttonStatus = false;
 
+DigitalOut led(D3); // Initialise the digital pin LED1 as an output
+
+void buttonSwitch() {
+    if (buttonStatus == false) {
+        led.write(1);
+        buttonStatus = true;
+    } else {
+        led.write(0);
+        buttonStatus = false;
+    }
+}
 
 int main()
 {
-    DigitalOut led(LED1); // Initialise the digital pin LED1 as an output
-    DigitalIn button(D8); // Configure P1_14 pin as input
+    
+    InterruptIn button(D2);
+    button.rise(&buttonSwitch);
+    AnalogIn rotary(A0);
+    float angle;
 
-    int buttonStatus = 0; // TODO implement button like a switch
-
-    while (true) {
-        if (button.read() == 1) {
-            led.write(1);
-        }
-        if (button.read() == 0) {
-            led.write(0);
+    while(true) {
+        while (buttonStatus == true) {
+            angle = rotary.read() * 1024;
+            printf ("angle: %d \n", int(angle));
+            led = !led;
+            ThisThread::sleep_for(angle);
         }
     }
 }

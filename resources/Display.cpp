@@ -5,36 +5,27 @@
 #include "rtos.h"
 
 Display::Display()
-    : displayThread(&Display::threadStarter, this, osPriorityNormal, 1024)
 {
-    //displayThread.signal_set(START_THREAD); 
-    displayThread.flags_set(START_THREAD);
-}
-
-void Display::threadStarter(void const *p)
-{
-    Display *instance = (Display*)p;
-    instance->lcdDraw();
+    lcdDrawer.start(callback(this, &Display::lcdDraw));
 }
 
 // called on display update, takes care of everything outputted to the display
 void Display::lcdDraw()
 {
     //displayThread.signal_wait(START_THREAD);
-    displayThread.flags_set(6);
     while(true) {
          // preparing the printing
-        if (GlobalData::angle < 10) {
-            sprintf(GlobalData::angleText, "angle:    %i", (int)GlobalData::angle);
-        } else if (GlobalData::angle < 100) {
-            sprintf(GlobalData::angleText, "angle:   %i", (int)GlobalData::angle);
-        } else if (GlobalData::angle < 1000) {
-            sprintf(GlobalData::angleText, "angle:  %i", (int)GlobalData::angle);
+        if (angle < 10) {
+            sprintf(angleText, "angle:    %i", (int)angle);
+        } else if (angle < 100) {
+            sprintf(angleText, "angle:   %i", (int)angle);
+        } else if (angle < 1000) {
+            sprintf(angleText, "angle:  %i", (int)angle);
         } else {
-            sprintf(GlobalData::angleText, "angle: %i", (int)GlobalData::angle);
+            sprintf(angleText, "angle: %i", (int)angle);
         }
-        sprintf(GlobalData::buttonText, "Status: %i", GlobalData::buttonStatus);
-        sprintf(GlobalData::counterText, "counter: %i", GlobalData::counter);
+        sprintf(buttonText, "Status: %i", buttonStatus);
+        sprintf(counterText, "counter: %i", counter);
         
         // background color
         BSP_LCD_SetFont(&Font12);
@@ -42,12 +33,12 @@ void Display::lcdDraw()
         BSP_LCD_SetBackColor(LCD_COLOR_BLUE);
 
         // write variables to display
-        BSP_LCD_DisplayStringAt(0, LINE(1), (uint8_t *) &GlobalData::angleText, LEFT_MODE);
-        BSP_LCD_DisplayStringAt(0, LINE(2), (uint8_t *) &GlobalData::buttonText, LEFT_MODE);
+        BSP_LCD_DisplayStringAt(0, LINE(1), (uint8_t *) &angleText, LEFT_MODE);
+        BSP_LCD_DisplayStringAt(0, LINE(2), (uint8_t *) &buttonText, LEFT_MODE);
 
         // print counter and change color
         BSP_LCD_SetBackColor(LCD_COLOR_BLACK);
-        BSP_LCD_DisplayStringAt(0, LINE(1), (uint8_t *) &GlobalData::counterText, RIGHT_MODE);
+        BSP_LCD_DisplayStringAt(0, LINE(1), (uint8_t *) &counterText, RIGHT_MODE);
         BSP_LCD_SetBackColor(LCD_COLOR_BLUE);
 
         // clearing lines instead of the whole display for speed

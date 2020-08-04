@@ -1,13 +1,9 @@
-class GlobalData
-{
-public:
-    static int buttonStatus;
-    static bool touchStatus;
-    static int angle;
-    static int counterStatus;
-    static int counter;
+extern int buttonStatus;
+extern bool touchStatus;
+extern int angle;
+extern int counterStatus;
+extern int counter;
 
-    static char angleText[30];
-    static char buttonText[30];
-    static char counterText[30];
-};
+extern char angleText[30];
+extern char buttonText[30];
+extern char counterText[30];

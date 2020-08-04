@@ -4,10 +4,15 @@
 #include "Display.h"
 #include "GlobalData.h"
 
-int GlobalData::buttonStatus = 0;
-bool GlobalData::touchStatus = false;
-int GlobalData::counterStatus = 0;
-int GlobalData::counter = 9000;
+int buttonStatus = 0;
+bool touchStatus = false;
+int counterStatus = 0;
+int counter = 9000;
+int angle;
+
+char angleText[30];
+char buttonText[30];
+char counterText[30];
 
 InterruptIn button(D2);
 DigitalOut led(D3);
@@ -17,16 +22,16 @@ AnalogIn rotary(A0);
 // turn button into a switch
 void buttonSwitch()
 {
-    if (GlobalData::buttonStatus == 0) {
-        GlobalData::buttonStatus = 1;
+    if (buttonStatus == 0) {
+        buttonStatus = 1;
     } else {
-        GlobalData::buttonStatus = 0;
+        buttonStatus = 0;
     }
 }
 
 void touchSwitch()
 {
-    GlobalData::touchStatus = !GlobalData::touchStatus;
+    touchStatus = !touchStatus;
 }
 
 // start screen for display
@@ -67,11 +72,11 @@ void counterIncrement()
     //printf("touchStatus %d \n", touchStatus);
     //clearAndHomeSerial();
 
-    if (GlobalData::touchStatus == true) {
-        GlobalData::counter++;        
+    if (touchStatus == true) {
+        counter++;        
     }
-    if (GlobalData::counter >= 9999) {
-        GlobalData::counter = 0;
+    if (counter >= 9999) {
+        counter = 0;
     }
     // TODO reset counter on display touch
 }
@@ -82,10 +87,10 @@ void blink()
     while(true) {
         // print to the serial, to demoenstrate async
         //printf ("angle: %d \n", angle);
-        if (GlobalData::buttonStatus == true) {
+        if (buttonStatus == true) {
             led = !led;
             // blink rate is dependant on the angle on the rotary angle sensor
-            ThisThread::sleep_for(std::chrono::milliseconds(GlobalData::angle));
+            ThisThread::sleep_for(std::chrono::milliseconds(angle));
         }
     }
 }
@@ -116,11 +121,11 @@ int main()
         BSP_TS_GetState(&touchState);
 
         // take input from rotary angle sonsor as often as possible
-        GlobalData::angle = (int)(rotary.read() * 1024);
+        angle = (int)(rotary.read() * 1024);
         // count as fast as possible
         counterIncrement();
 
-        if (GlobalData::buttonStatus == 0) {
+        if (buttonStatus == 0) {
             led.write(0);
         }
 

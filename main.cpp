@@ -75,10 +75,16 @@ void counterIncrement()
     if (touchStatus == true) {
         counter++;        
     }
-    if (counter >= 9999) {
+    if (counter > 9999) {
         counter = 0;
     }
-    // TODO reset counter on display touch
+
+}
+
+// quick fix for resetting the counter on touch detected
+void counterReset()
+{
+    counter = 0;
 }
 
 // when the switch is on make the led blink
@@ -111,7 +117,7 @@ int main()
     // draw to the display async
     Display display;
     
-
+    // init the touch display
     BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
     TS_StateTypeDef touchState;
 
@@ -130,7 +136,8 @@ int main()
         }
 
         if(touchState.touchDetected) {
-            printf("touch detected");
+            printf("touch detected \n");
+            counterReset();
         }
     }
 }

@@ -2,10 +2,11 @@
 #include "Display.h"
 #include "GlobalData.h"
 #include "mbed.h"
-#include "rtos.h"
 
+// when this object is created create thread
 Display::Display()
 {
+    // run lcdDraw async
     lcdDrawer.start(callback(this, &Display::lcdDraw));
 }
 
